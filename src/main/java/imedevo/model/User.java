@@ -6,6 +6,7 @@ public class User {
   private String name;
   private String phone;
   private String email;
+  private String password;
   private int birthDate;
 
 
@@ -14,13 +15,16 @@ public class User {
     name = "None";
     phone = "None";
     email = "None";
+    password = "None";
     birthDate = 0;
   }
 
-  public User(long id, String name, String phone, String email, int birthDate) {
+  public User(long id, String name, String phone, String email, String password, int birthDate) {
     this.id = id;
     this.name = name;
     this.phone = phone;
+    this.email = email;
+    this.password = password;
     this.birthDate = birthDate;
   }
 
@@ -62,5 +66,19 @@ public class User {
 
   public void setBirthDate(int birthDate) {
     this.birthDate = birthDate;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  @Override
+  public String toString() {
+    return "{ name:" + name + ", " +
+            "e-mail: " + email + " }";
   }
 }
