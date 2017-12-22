@@ -7,7 +7,7 @@ public class User {
   private String phone;
   private String email;
   private String password;
-  private int birthDate;
+  private String birthDate;
 
 
   public User() {
@@ -16,10 +16,10 @@ public class User {
     phone = "None";
     email = "None";
     password = "None";
-    birthDate = 0;
+    birthDate = "None";
   }
 
-  public User(long id, String name, String phone, String email, String password, int birthDate) {
+  public User(long id, String name, String phone, String email, String password, String birthDate) {
     this.id = id;
     this.name = name;
     this.phone = phone;
@@ -60,11 +60,11 @@ public class User {
     this.email = email;
   }
 
-  public int getBirthDate() {
+  public String getBirthDate() {
     return birthDate;
   }
 
-  public void setBirthDate(int birthDate) {
+  public void setBirthDate(String birthDate) {
     this.birthDate = birthDate;
   }
 
