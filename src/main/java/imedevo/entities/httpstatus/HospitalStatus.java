@@ -38,8 +38,8 @@ public enum HospitalStatus {
     EDIT_RATING_SUCCESS(944, "Your rating was edited successfully."),
 
     //sign up for an appointment with the doctor,
-    SEE_DOC_SUCCESS(950, "Doctor was apply your visit time."),
-    SEE_DOC_REFUSE(951, "Doctor was refuse your visit time."),
+    ADD_DOC_SUCCESS(950, "Doctor was added to the base."),
+    ADD_DOC_FALSE(951, "Doctor wasn't added to the base."),
 
     // deleting profile
     DELETE_PROFILE_SUCCESS(960, "Your profile was deleted.")
