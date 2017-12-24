@@ -1,0 +1,76 @@
+package imedevo.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import imedevo.httpStatuses.NoSuchUserException;
+import imedevo.httpStatuses.TokenStatus;
+import imedevo.model.TemporaryToken;
+import imedevo.model.User;
+import imedevo.repository.TemporaryTokenRepository;
+import imedevo.repository.UserRepository;
+import javax.transaction.Transactional;
+
+@Service
+public class ForgotPasswordService {
+
+  @Autowired
+  private UserRepository userRepository;
+
+  @Autowired
+  private MailSenderService mailSender;
+
+  @Autowired
+  private TemporaryTokenRepository tokenRepository;
+
+  public Map<String, Object> resetPassword(String email) throws NoSuchUserException {
+    Map<String, Object> map = new HashMap<>();
+    if (userRepository.findByEmail(email) != null) {
+      TemporaryToken token = new TemporaryToken(email);
+      tokenRepository.save(token);
+      sendResetTokenEmail(token);
+      map.put("status", TokenStatus.NEW_TOKEN_CREATED);
+      return map;
+    } else {
+      throw new NoSuchUserException();
+    }
+  }
+
+  private void sendResetTokenEmail(TemporaryToken token) {
+    mailSender.sendMail(token.getUserEmail(), "Сброс пароля iMED",
+        "Мы узнали, что ваш пароль был утерян..."
+            + "\n\nНо не стоит беспокоиться! Вы можете использовать ссылку в течении 24 часов для его восстановления:"
+            + "\nhttp://54.37.125.178:8080/forgot/resetpassword.html?token=" + token.getToken()
+            + "\n\nЕсли ссылка не будет использована в указанный срок - она будет аннулирована."
+            + "\n\nС уважением,\nкоманда проекта iMED");
+  }
+
+  @Transactional
+  public Map<String, Object> settingNewPassword(String token, String newPassword) {
+    Map<String, Object> map = new HashMap<>();
+    TemporaryToken tempToken = tokenRepository.findByToken(token);
+    if (tempToken != null) {
+      User user = userRepository.findByEmail(tempToken.getUserEmail());
+      if (tempToken.getExpirationDate().isAfter(LocalDateTime.now())) {
+        user.setPassword(newPassword);
+        tokenRepository.delete(tempToken.getId());
+        userRepository.save(user);
+        map.put("status", TokenStatus.PASSWORD_CHANGED);
+      } else {
+        map.put("status", TokenStatus.TIME_EXPIRED);
+      }
+    } else {
+      map.put("status", TokenStatus.TOKEN_NOT_FOUND);
+    }
+    return map;
+  }
+
+  private String convertFromStringToMD5(String newPassword) {
+    return DigestUtils.md5DigestAsHex(newPassword.getBytes());
+  }
+}
