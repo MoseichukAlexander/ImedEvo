@@ -15,10 +15,9 @@ import java.util.List;
 import java.util.Map;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
-
-//import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service
 public class UserService {
@@ -82,11 +81,11 @@ public class UserService {
     Map<String, Object> map = new HashMap<>();
 
     /** this is security checking */
-//    if (userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-//        .getId() != updatedUser.getId()) {
-//      map.put("status", UserStatus.ACCESS_DENIED);
-//      return map;
-//    }
+    if (userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+        .getId() != updatedUser.getId()) {
+      map.put("status", UserStatus.ACCESS_DENIED);
+      return map;
+    }
 
     if (updatedUser.getEmail() != null) {
       User checkUserFromDb = userRepository.findByEmail(updatedUser.getEmail());
@@ -116,7 +115,7 @@ public class UserService {
 
   @Transactional
   public void delete(long id) throws UserNotFoundException, AccessDeniedException {
-    /** this is security checking */
+//    /** this is security checking */
 //    if (userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
 //        .getId() != id) {
 //      throw new AccessDeniedException();
@@ -128,5 +127,17 @@ public class UserService {
     } else {
       throw new UserNotFoundException();
     }
+  }
+
+  public Map<String, Object> login(String email, String password) {
+    Map<String, Object> map = new HashMap<>();
+    User user = userRepository.findByEmail(email);
+    if (user == null || !user.getPassword().equals(password)) {
+      map.put("status", UserStatus.LOGIN_BAD_LOGIN);
+    } else {
+      map.put("status", UserStatus.LOGIN_OK);
+      map.put("user", user);
+    }
+    return map;
   }
 }

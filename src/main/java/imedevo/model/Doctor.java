@@ -1,6 +1,5 @@
 package imedevo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,7 +9,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
- * (@link Doctor model) class.
+ * Model (@link Doctor) class.
  */
 
 @Entity
@@ -20,7 +19,6 @@ public class Doctor {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
-  @JsonIgnore
   private long id;
 
   @Column(name = "user_id")
@@ -33,7 +31,6 @@ public class Doctor {
   private String doctorGualification;
   @Column(name = "education")
   private String education;
-  //достижения
   @Column(name = "doctor_achievements")
   private String doctorAchievements;
   @Column(name = "price")

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -38,14 +40,20 @@ public class UserController {
     return userService.save(user);
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/updateuser")
   public Map<String, Object> updateUser(@RequestBody User user) {
     return userService.updateUser(user);
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/deleteuser/{id}")
   public void deleteUser(@PathVariable long id)
       throws UserNotFoundException, AccessDeniedException {
     userService.delete(id);
+  }
+
+  @RequestMapping(value = "/login", method = RequestMethod.POST)
+  public Map<String, Object> login(@RequestParam(name = "email") String email,
+      @RequestParam(name = "password") String password) {
+    return userService.login(email, password);
   }
 }

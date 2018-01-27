@@ -48,7 +48,7 @@ public class DoctorController {
     return doctorService.updateDoctor(doctor);
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/deletedoctor/{id}")
   public void deleteDoctor(@PathVariable long id)
       throws UserNotFoundException, AccessDeniedException {
     doctorService.delete(id);

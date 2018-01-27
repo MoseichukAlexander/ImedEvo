@@ -38,7 +38,11 @@ public class DoctorService {
   RolesService rolesService;
 
   public List<Doctor> getAll() {
-    return doctorRepository.findAll();
+    List<Doctor> listOfDoctors = doctorRepository.findAll();
+    for (Doctor doctor : listOfDoctors) {
+      doctor.getUser().setUserRoles(rolesService.getUserRoles(doctor.getUserId()));
+    }
+    return listOfDoctors;
   }
 
   public Doctor getById(long id) throws UserNotFoundException {
@@ -120,7 +124,6 @@ public class DoctorService {
   public void delete(long userId) throws UserNotFoundException, AccessDeniedException {
 
     if (doctorRepository.findOne(userId) != null) {
-//      List<UserRole> userRoles = doctorRepository.findOne(userId).getUser().getUserRoles();
       for (UserRole userRole : userRoleRepository.findByUserId(userId)) {
         if (userRoleRepository.findByUserId(userId).equals(Role.DOCTOR)) {
           userRoleRepository.delete(userRoleRepository.findByUserId(userId));

@@ -34,13 +34,12 @@ public class ClinicController {
         return clinicService.save(clinic);
     }
 
-    @PutMapping("/{id}")
-    public Map<String, Object> updateClinic(@PathVariable Long id,@RequestBody Clinic clinic) {
-        clinic.setId(id);
+    @PutMapping("/updateclinic")
+    public Map<String, Object> updateClinic(@RequestBody Clinic clinic) {
         return clinicService.updateClinic(clinic);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("deleteclinic/{id}")
     public void deleteClinic(@PathVariable Long id){
         clinicService.delete(id)
                      .orElseThrow(NoSuchClinicException::new);
