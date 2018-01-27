@@ -23,21 +23,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
         .authorizeRequests()
-        .antMatchers("/users/login", "users/registration", "/users/getall", "/users/{id}",
-            "/doctors/getall", "/doctors/{id}", "/clinics/getall", "/clinics/{id}",
-            "/forgot/reset", "/forgot/newpassword")
+        .antMatchers("/users/login", "users/registration", "/doctors/getall", "/doctors/*",
+            "/clinics/getall", "/clinics/*", "/forgot/reset", "/forgot/newpassword")
         .permitAll()
-        .antMatchers("/users/{id}", "/users/updateuser")
+        .antMatchers("/users/*", "/users/updateuser")
         .hasAuthority("USER")
         .antMatchers("/doctors/updatedoctor")
         .hasAuthority("DOCTOR")
         .antMatchers("/users/createdoctor", "/doctors/updatedoctor",
-            "doctors/deletedoctor/{id}", "clinics/createclinic", "clinics/updateclinic",
-            "clinics/deleteclinic/{id}")
+            "doctors/deletedoctor/*", "clinics/createclinic", "clinics/updateclinic",
+            "clinics/deleteclinic/*")
         .hasAuthority("CLINIC_ADMIN")
-        .antMatchers("/users/createuser", "/users/updateuser", "/users/deleteuser/{id}",
-            "/users/createdoctor", "/doctors/updatedoctor", "doctors/deletedoctor/{id}",
-            "clinics/createclinic", "clinics/updateclinic", "clinics/deleteclinic/{id}")
+        .antMatchers("/users/getall", "/users/*", "/users/createuser", "/users/updateuser",
+            "/users/deleteuser/*", "/users/createdoctor", "/doctors/updatedoctor",
+            "doctors/deletedoctor/*", "clinics/createclinic", "clinics/updateclinic",
+            "clinics/deleteclinic/*")
         .hasAuthority("SUPER_ADMIN")
         .antMatchers("/**")
         .hasAuthority("SYSTEM")
