@@ -30,7 +30,7 @@ public class UserController {
     return userService.getAll();
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/getuser/{id}")
   public User getUserById(@PathVariable long id) throws UserNotFoundException {
     return userService.getById(id);
   }
