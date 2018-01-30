@@ -39,8 +39,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "doctors/deletedoctor/*", "clinics/createclinic", "clinics/updateclinic",
             "clinics/deleteclinic/*")
         .hasAuthority("SUPER_ADMIN")
-        .antMatchers("/**")
-        .hasAuthority("SYSTEM")
         .and()
         .logout().logoutUrl("/services/users/logout")
         .clearAuthentication(true).logoutSuccessUrl("/services/users/login")
