@@ -170,7 +170,7 @@ public class UserService {
                         Paths.get(uploadImageFolder,
                                 String.format("(%s)%s", Instant.now().getEpochSecond(), fileName)));
                 link = uploadImageFolder + "/" + fileName;
-                imageRepository.save(new Image(userId, link));
+               imageRepository.save(new Image(userId, link));
                 map.put("status", UserStatus.IMAGE_UPLOAD_SUCCESS);
             } catch (IOException ex) {
                 logger.error(ex.getMessage(), ex);
