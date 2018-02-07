@@ -24,10 +24,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http
         .authorizeRequests()
         .antMatchers("/users/login", "users/registration", "/doctors/getall", "/doctors/*",
-            "/clinics/getall", "/clinics/*", "/forgot/reset", "/forgot/newpassword")
+            "/clinics/getall", "/clinics/*", "/forgot/reset", "/forgot/newpassword", "/search/clinic")
         .permitAll()
         .antMatchers("/users/*", "/users/updateuser")
-        .hasAuthority("USER")
+        .hasAuthority("USER, SUPER_ADMIN")
         .antMatchers("/doctors/updatedoctor")
         .hasAuthority("DOCTOR")
         .antMatchers("/users/createdoctor", "/doctors/updatedoctor",

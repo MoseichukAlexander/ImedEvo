@@ -1,10 +1,17 @@
 package imedevo.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -27,8 +34,24 @@ public class Doctor {
   @OneToOne(mappedBy = "doctor")
   private User user;
 
+//  @Column(name = "specialization_id")
+//  private long specializationId;
+
+  //    @OneToOne(optional = true, targetEntity=Specialization.class)
+//  @JoinColumn(name="id")
+//  @OneToOne()
+////  @JoinColumn(name = "id", referencedColumnName = "specialization_id", insertable = false, updatable = false)
+//  private Specialization specialization;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "doctor_specializations",
+      joinColumns = @JoinColumn(name = "doctor_id"),
+      inverseJoinColumns = @JoinColumn(name = "specialization_id"))
+  private List<Specialization> specialization;
+
   @Column(name = "doctor_gualification")
-  private String doctorGualification;
+  private String doctorQualification;
   @Column(name = "education")
   private String education;
   @Column(name = "doctor_achievements")
@@ -42,14 +65,32 @@ public class Doctor {
   @Column(name = "rating")
   private int reting;
 
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "doctor_clinics",
+      joinColumns = @JoinColumn(name = "doctor_id"),
+      inverseJoinColumns = @JoinColumn(name = "clinic_id"))
+  private List<DoctorClinic> doctorClinics;
+
   public Doctor() {
+    this.user = null;
+    this.specialization = new ArrayList<>();
+    this.doctorQualification = null;
+    this.education = null;
+    this.doctorAchievements = null;
+    this.price = 0;
+    this.workExperience = 0;
+    this.pediatrician = false;
+    this.reting = 0;
   }
 
-  public Doctor(long userId, User user, String doctorGualification, String education,
-      String doctorAchievements, int price, int workExperience, boolean pediatrician, int reting) {
+  public Doctor(long userId, User user,
+      String doctorQualification, String education, String doctorAchievements, int price,
+      int workExperience, boolean pediatrician, int reting) {
     this.userId = userId;
     this.user = user;
-    this.doctorGualification = doctorGualification;
+    this.specialization = new ArrayList<>();
+    this.doctorQualification = doctorQualification;
     this.education = education;
     this.doctorAchievements = doctorAchievements;
     this.price = price;
@@ -82,12 +123,20 @@ public class Doctor {
     this.user = user;
   }
 
-  public String getDoctorGualification() {
-    return doctorGualification;
+  public List<Specialization> getSpecialization() {
+    return specialization;
   }
 
-  public void setDoctorGualification(String doctorGualification) {
-    this.doctorGualification = doctorGualification;
+  public void setSpecialization(List<Specialization> specialization) {
+    this.specialization = specialization;
+  }
+
+  public String getDoctorQualification() {
+    return doctorQualification;
+  }
+
+  public void setDoctorQualification(String doctorQualification) {
+    this.doctorQualification = doctorQualification;
   }
 
   public String getEducation() {
@@ -136,5 +185,13 @@ public class Doctor {
 
   public void setReting(int reting) {
     this.reting = reting;
+  }
+
+  public List<DoctorClinic> getDoctorClinics() {
+    return doctorClinics;
+  }
+
+  public void setDoctorClinics(List<DoctorClinic> doctorClinics) {
+    this.doctorClinics = doctorClinics;
   }
 }

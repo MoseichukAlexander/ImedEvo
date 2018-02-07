@@ -20,7 +20,7 @@ public class DoctorClinic {
   @Column(name = "id")
   private long id;
   @Column(name = "doctor_id")
-  private long doctorID;
+  private long doctorId;
   @Column(name = "clinic_id")
   private long clinicId;
 
@@ -28,17 +28,17 @@ public class DoctorClinic {
 
   }
 
-  public DoctorClinic(long doctorID, long clinicId) {
-    this.doctorID = doctorID;
+  public DoctorClinic(long doctorId, long clinicId) {
+    this.doctorId = doctorId;
     this.clinicId = clinicId;
   }
 
-  public long getDoctorID() {
-    return doctorID;
+  public long getDoctorId() {
+    return doctorId;
   }
 
-  public void setDoctorID(long doctorID) {
-    this.doctorID = doctorID;
+  public void setDoctorId(long doctorId) {
+    this.doctorId = doctorId;
   }
 
   public long getClinicId() {
