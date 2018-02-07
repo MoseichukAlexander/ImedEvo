@@ -12,7 +12,7 @@ import imedevo.model.User;
 import imedevo.service.RegistrationService;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class RegistrationController {
 
   @Autowired

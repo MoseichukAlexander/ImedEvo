@@ -23,18 +23,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
         .authorizeRequests()
-        .antMatchers("/users/login", "users/registration", "/doctors/getall", "/doctors/*",
+        .antMatchers("/users/login", "user/registration", "/doctors/getall", "/doctors/*",
             "/clinics/getall", "/clinics/*", "/forgot/reset", "/forgot/newpassword", "/search/clinic")
         .permitAll()
         .antMatchers("/users/*", "/users/updateuser")
-        .hasAuthority("USER, SUPER_ADMIN")
+        .hasAuthority("USER")
         .antMatchers("/doctors/updatedoctor")
         .hasAuthority("DOCTOR")
-        .antMatchers("/users/createdoctor", "/doctors/updatedoctor",
-            "doctors/deletedoctor/*", "clinics/createclinic", "clinics/updateclinic",
-            "clinics/deleteclinic/*")
-        .hasAuthority("CLINIC_ADMIN")
-        .antMatchers("/users/**", "/doctors/**", "clinics/**")
+//        .antMatchers("/users/createdoctor", "/doctors/updatedoctor",
+//            "doctors/deletedoctor/*", "clinics/createclinic", "clinics/updateclinic",
+//            "clinics/deleteclinic/*")
+//        .hasAuthority("CLINIC_ADMIN")
+        .antMatchers("/users/getall", "/users/*", "/doctors/**", "clinics/**")
         .hasAuthority("SUPER_ADMIN")
         .and()
         .logout().logoutUrl("/users/logout")
