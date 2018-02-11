@@ -2,7 +2,6 @@ package imedevo.model;
 
 import java.sql.Date;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 @Entity
@@ -62,12 +63,16 @@ public class User {
       inverseJoinColumns = @JoinColumn(name = "user_id"))
   private List<UserRole> userRoles;
 
+  @OneToOne
+  @PrimaryKeyJoinColumn
+  Doctor doctor;
+
   public User() {
   }
 
   public User(String firstName, String lastName, String phone, String email,
       String password, String city, String house, String street, String patronymic, String sex,
-      Date birthDate) {
+      Date birthDate, Doctor doctor) {
     this.lastName = lastName;
     this.firstName = firstName;
     this.patronymic = patronymic;
@@ -80,6 +85,7 @@ public class User {
     this.patronymic = patronymic;
     this.sex = sex;
     this.birthDate = birthDate;
+    this.doctor = doctor;
   }
 
   @Override

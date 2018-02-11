@@ -1,8 +1,7 @@
 package imedevo.repository;
 
-import org.springframework.data.repository.CrudRepository;
-
 import imedevo.model.User;
+import org.springframework.data.repository.CrudRepository;
 
 public interface UserRepository extends CrudRepository<User, Long> {
 

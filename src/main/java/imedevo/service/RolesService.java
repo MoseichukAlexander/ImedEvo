@@ -1,12 +1,10 @@
 package imedevo.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
 import imedevo.model.UserRole;
 import imedevo.repository.UserRoleRepository;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class RolesService {
