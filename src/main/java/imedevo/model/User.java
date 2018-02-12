@@ -1,6 +1,7 @@
 package imedevo.model;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -56,6 +57,9 @@ public class User {
   @Column(name = "birth_date")
   private Date birthDate;
 
+  @Column(name = "date_of_registration")
+  private LocalDateTime dateOfRegistration;
+
   @OneToMany(fetch = FetchType.LAZY)
   @JoinTable(
       name = "user_roles",
@@ -72,7 +76,7 @@ public class User {
 
   public User(String firstName, String lastName, String phone, String email,
       String password, String city, String house, String street, String patronymic, String sex,
-      Date birthDate, Doctor doctor) {
+      Date birthDate, Doctor doctor, LocalDateTime dateOfRegistration) {
     this.lastName = lastName;
     this.firstName = firstName;
     this.patronymic = patronymic;
@@ -86,22 +90,26 @@ public class User {
     this.sex = sex;
     this.birthDate = birthDate;
     this.doctor = doctor;
+    this.dateOfRegistration = dateOfRegistration;
   }
 
   @Override
   public String toString() {
     return "User{" +
         "id=" + id +
-        ", firstName='" + firstName + '\'' +
         ", lastName='" + lastName + '\'' +
+        ", firstName='" + firstName + '\'' +
+        ", patronymic='" + patronymic + '\'' +
         ", phone='" + phone + '\'' +
         ", email='" + email + '\'' +
         ", city='" + city + '\'' +
-        ", house=" + house +
+        ", house='" + house + '\'' +
         ", street='" + street + '\'' +
-        ", patronymic='" + patronymic + '\'' +
         ", sex='" + sex + '\'' +
-        ", birthDate='" + birthDate + '\'' +
+        ", birthDate=" + birthDate +
+        ", dateOfRegistration=" + dateOfRegistration +
+        ", userRoles=" + userRoles +
+        ", doctor=" + doctor +
         '}';
   }
 
@@ -109,7 +117,7 @@ public class User {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -207,5 +215,13 @@ public class User {
 
   public void setUserRoles(List<UserRole> userRoles) {
     this.userRoles = userRoles;
+  }
+
+  public LocalDateTime getDateOfRegistration() {
+    return dateOfRegistration;
+  }
+
+  public void setDateOfRegistration(LocalDateTime dateOfRegistration) {
+    this.dateOfRegistration = dateOfRegistration;
   }
 }
