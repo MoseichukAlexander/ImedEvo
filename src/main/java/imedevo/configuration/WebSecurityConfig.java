@@ -56,7 +56,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
   }
 
-
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
     auth

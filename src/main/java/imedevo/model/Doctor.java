@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -33,15 +32,6 @@ public class Doctor {
 
   @OneToOne(mappedBy = "doctor")
   private User user;
-
-//  @Column(name = "specialization_id")
-//  private long specializationId;
-
-  //    @OneToOne(optional = true, targetEntity=Specialization.class)
-//  @JoinColumn(name="id")
-//  @OneToOne()
-////  @JoinColumn(name = "id", referencedColumnName = "specialization_id", insertable = false, updatable = false)
-//  private Specialization specialization;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
