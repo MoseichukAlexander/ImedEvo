@@ -49,12 +49,14 @@ public class DoctorService {
     return listOfDoctors;
   }
 
-  public Doctor getById(long id) throws UserNotFoundException {
+  public Map<String, Object> getById(long id) throws UserNotFoundException {
     Doctor doctor = doctorRepository.findById(id);
     if (doctor == null) {
       throw new UserNotFoundException();
     }
-    return doctor;
+    Map<String, Object> map = new HashMap<>();
+    map.put("doctor", doctor);
+    return map;
   }
 
   @Transactional

@@ -33,7 +33,7 @@ public class DoctorController {
   }
 
   @GetMapping("/{id}")
-  public Doctor getDoctorById(@PathVariable long id) throws UserNotFoundException {
+  public Map<String, Object> getDoctorById(@PathVariable long id) throws UserNotFoundException {
     return doctorService.getById(id);
   }
 
