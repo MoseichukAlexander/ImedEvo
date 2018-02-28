@@ -11,7 +11,7 @@ import java.util.Map;
 import imedevo.httpStatuses.NoSuchUserException;
 import imedevo.httpStatuses.TokenStatus;
 import imedevo.model.TemporaryToken;
-import imedevo.model.User;
+import imedevo.model.AppUser;
 import imedevo.repository.TemporaryTokenRepository;
 import imedevo.repository.UserRepository;
 import javax.transaction.Transactional;
@@ -28,10 +28,10 @@ public class ForgotPasswordService {
   @Autowired
   private TemporaryTokenRepository tokenRepository;
 
-  public Map<String, Object> resetPassword(String email) throws NoSuchUserException {
+  public Map<String, Object> resetPassword(String username) throws NoSuchUserException {
     Map<String, Object> map = new HashMap<>();
-    if (userRepository.findByEmail(email) != null) {
-      TemporaryToken token = new TemporaryToken(email);
+    if (userRepository.findByUsername(username) != null) {
+      TemporaryToken token = new TemporaryToken(username);
       tokenRepository.save(token);
       sendResetTokenEmail(token);
       map.put("status", TokenStatus.NEW_TOKEN_CREATED);
@@ -55,7 +55,7 @@ public class ForgotPasswordService {
     Map<String, Object> map = new HashMap<>();
     TemporaryToken tempToken = tokenRepository.findByToken(token);
     if (tempToken != null) {
-      User user = userRepository.findByEmail(tempToken.getUserEmail());
+      AppUser user = userRepository.findByUsername(tempToken.getUserEmail());
       if (tempToken.getExpirationDate().isAfter(LocalDateTime.now())) {
         user.setPassword(newPassword);
         tokenRepository.delete(tempToken.getId());

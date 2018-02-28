@@ -72,4 +72,25 @@ public class UserRole {
     return Objects.equals(userId, anotherUserRole.getUserId())
         && Objects.equals(roleId, anotherUserRole.getRoleId());
   }
+
+
+
+  public String getRoleName() {
+    switch ((int) roleId) {
+      case 1:
+        return "USER";
+      case 2:
+        return "DOCTOR";
+      case 3:
+        return "CLINIC_ADMIN";
+      case 4:
+        return "SUPER_ADMIN";
+      case 5:
+        return "SYSTEM";
+      case 6:
+        return "BLOGGER";
+      default:
+        return "ANONYMOUS";
+    }
+  }
 }

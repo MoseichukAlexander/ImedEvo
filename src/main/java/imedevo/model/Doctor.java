@@ -32,7 +32,7 @@ public class Doctor {
 
   @OneToOne
   @PrimaryKeyJoinColumn
-  private User user;
+  private AppUser user;
 
   @OneToMany(fetch = FetchType.LAZY)
   @JoinTable(
@@ -67,7 +67,7 @@ public class Doctor {
 
   }
 
-  public Doctor(long userId, User user,
+  public Doctor(long userId, AppUser user,
       String doctorQualification, String education, String doctorAchievements, int price,
       int workExperience, boolean pediatrician, Double reting) {
     this.userId = userId;
@@ -98,12 +98,12 @@ public class Doctor {
     this.userId = userId;
   }
 
-  public User getUser() {
+  public AppUser getUser() {
     return user;
   }
 
-  public void setUser(User user) {
-    this.user = user;
+  public void setUser(AppUser AppUser) {
+    this.user = AppUser;
   }
 
   public List<Specialization> getSpecialization() {

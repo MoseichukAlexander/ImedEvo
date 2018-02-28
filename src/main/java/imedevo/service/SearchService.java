@@ -29,6 +29,7 @@ public class SearchService {
   @Autowired
   SpecializationRepository specializationRepository;
 
+
   @Transactional
   public Map<String, Object> findByAnyParams(String searchParams) {
     Map<String, Object> searchResult = new HashMap<>();
@@ -44,9 +45,9 @@ public class SearchService {
     } else {
       searchResult.put("doctors", foundByDoctorLastname);
     }
-    if (foundByClinicName.size() == 0){
+    if (foundByClinicName.size() == 0) {
       searchResult.put("clinics", null);
-    }else {
+    } else {
       searchResult.put("clinics", findClinicByName(searchParams));
     }
     return searchResult;
@@ -71,7 +72,7 @@ public class SearchService {
     if (foundSpecializatin == null || foundSpecializatin.getDoctors() == null) {
       return searchingResult;
     }
-      return foundSpecializatin.getDoctors();
+    return foundSpecializatin.getDoctors();
   }
 
   @Transactional
@@ -83,7 +84,7 @@ public class SearchService {
     }
 
     try {
-      foundByLastname = doctorRepository.findByDoctorLastname(searchParams);
+      foundByLastname = doctorRepository.findByLastname(searchParams);
     } catch (SQLGrammarException e) {
       System.err.println("SQLGrammarException: " + e.getMessage());
     } catch (NullPointerException e) {

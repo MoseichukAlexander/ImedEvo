@@ -30,6 +30,9 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-mail')
+
+    compile("io.jsonwebtoken:jjwt:0.7.0")
+
     compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.8')
     compile("org.springframework.boot:spring-boot-starter-data-jpa") {
         exclude group: 'org.hibernate', module: 'hibernate-core'

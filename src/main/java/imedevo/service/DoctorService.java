@@ -1,26 +1,24 @@
 package imedevo.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
-
+import imedevo.httpStatuses.AccessDeniedException;
+import imedevo.httpStatuses.DocStatus;
+import imedevo.httpStatuses.UserNotFoundException;
+import imedevo.model.AppUser;
+import imedevo.model.Doctor;
+import imedevo.model.Role;
+import imedevo.model.UserRole;
+import imedevo.repository.DoctorRepository;
+import imedevo.repository.UserRepository;
+import imedevo.repository.UserRoleRepository;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import imedevo.httpStatuses.AccessDeniedException;
-import imedevo.httpStatuses.DocStatus;
-import imedevo.httpStatuses.UserNotFoundException;
-import imedevo.model.Doctor;
-import imedevo.model.Role;
-import imedevo.model.User;
-import imedevo.model.UserRole;
-import imedevo.repository.DoctorRepository;
-import imedevo.repository.UserRepository;
-import imedevo.repository.UserRoleRepository;
 import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Service for (@link Doctor) class.
@@ -134,10 +132,10 @@ public class DoctorService {
       map.put("status", DocStatus.DOCTOR_NOT_FOUND);
     } else {
 
-      User userUpd = updatedDoctor.getUser();
+      AppUser userUpd = updatedDoctor.getUser();
       if (userUpd != null) {
         userUpd.setId(updatedDoctor.getUserId());
-        User userFromDb = userRepository.findOne(userUpd.getId());
+        AppUser userFromDb = userRepository.findOne(userUpd.getId());
         Field[] fields = userUpd.getClass().getDeclaredFields();
         AccessibleObject.setAccessible(fields, true);
         for (Field field : fields) {

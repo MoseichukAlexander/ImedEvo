@@ -1,6 +1,6 @@
 package imedevo.controller;
 
-import imedevo.model.User;
+import imedevo.model.AppUser;
 import imedevo.service.RegistrationService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class RegistrationController {
 
 
   @RequestMapping(value = "/registration", method = RequestMethod.POST)
-  public Map<String, Object> userRegistration(@RequestBody User user) {
-    return registrationService.createNewUserInDB(user);
+  public Map<String, Object> userRegistration(@RequestBody AppUser appUser) {
+    return registrationService.createNewUserInDB(appUser);
   }
 }

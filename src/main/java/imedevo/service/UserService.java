@@ -1,13 +1,17 @@
 package imedevo.service;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.web.multipart.MultipartFile;
-
+import imedevo.configuration.WebSecurityConfig;
+import imedevo.httpStatuses.AccessDeniedException;
+import imedevo.httpStatuses.UserNotFoundException;
+import imedevo.httpStatuses.UserStatus;
+import imedevo.model.AppUser;
+import imedevo.model.ChangePassword;
+import imedevo.model.Image;
+import imedevo.model.Role;
+import imedevo.model.UserRole;
+import imedevo.repository.ImageRepository;
+import imedevo.repository.UserRepository;
+import imedevo.repository.UserRoleRepository;
 import java.io.IOException;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -18,19 +22,15 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import imedevo.httpStatuses.AccessDeniedException;
-import imedevo.httpStatuses.UserNotFoundException;
-import imedevo.httpStatuses.UserStatus;
-import imedevo.model.ChangePassword;
-import imedevo.model.Image;
-import imedevo.model.Role;
-import imedevo.model.User;
-import imedevo.model.UserRole;
-import imedevo.repository.ImageRepository;
-import imedevo.repository.UserRepository;
-import imedevo.repository.UserRoleRepository;
 import javax.transaction.Transactional;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserService {
@@ -48,21 +48,27 @@ public class UserService {
   private ImageRepository imageRepository;
 
   @Autowired
+  private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+  @Autowired
+  WebSecurityConfig webSecurityConfig;
+
+  @Autowired
   private GeocodingService geocoding;
 
   private final String status = "status";
 
-  public List<User> getAll() {
-    List<User> listOfUsers = (List<User>) userRepository.findAll();
-    for (User user : listOfUsers) {
+  public List<AppUser> getAll() {
+    List<AppUser> listOfUsers = (List<AppUser>) userRepository.findAll();
+    for (AppUser user : listOfUsers) {
       user.setUserRoles(rolesService.getUserRoles(user.getId()));
       user.setPassword("not displayed");
     }
     return listOfUsers;
   }
 
-  public User getById(long id) throws UserNotFoundException {
-    User user = userRepository.findOne(id);
+  public AppUser getById(long id) throws UserNotFoundException {
+    AppUser user = userRepository.findOne(id);
     if (user == null) {
       throw new UserNotFoundException();
     }
@@ -72,41 +78,42 @@ public class UserService {
   }
 
   @Transactional
-  public Map<String, Object> save(User user) {
+  public Map<String, Object> save(AppUser appUser) {
     Map<String, Object> map = new HashMap<>();
 
-    if (user.getEmail() == null) {
+    if (appUser.getUsername() == null) {
       map.put(status, UserStatus.REGISTRATION_ERROR_EMPTY_EMAIL);
       return map;
     }
 
-    if (userRepository.findByEmail(user.getEmail()) != null) {
+    if (userRepository.findByUsername(appUser.getUsername()) != null) {
       map.put(status, UserStatus.REGISTRATION_ERROR_DUPLICATE_USERS);
       return map;
     }
 
-    if (user.getPassword() == null) {
+    if (appUser.getPassword() == null) {
       map.put(status, UserStatus.REGISTRATION_ERROR_INCORRECT_PASSWORD);
       return map;
     }
 
-    if (user.getCity() != null) {
-      user.setCity(geocoding.getGeopositionByAddress(user.getCity()).getAddress());
+    if (appUser.getCity() != null) {
+      appUser.setCity(geocoding.getGeopositionByAddress(appUser.getCity()).getAddress());
     }
 
-    user.setDateOfRegistration(LocalDate.now().toString());
-    map.put(status, UserStatus.ADD_USER_OK);
-    map.put("user", userRepository.save(user));
+    appUser.setDateOfRegistration(LocalDate.now().toString());
 
-    List<UserRole> userRoles = rolesService.getUserRoles(user.getId());
-    userRoles.add(new UserRole(user.getId(), Role.USER));
+    map.put(status, UserStatus.ADD_USER_OK);
+    map.put("appUser", userRepository.save(appUser));
+
+    List<UserRole> userRoles = rolesService.getUserRoles(appUser.getId());
+    userRoles.add(new UserRole(appUser.getId(), Role.USER));
     rolesService.save(userRoles);
     map.put("role", userRoles);
     return map;
   }
 
   @Transactional
-  public Map<String, Object> updateUser(User updatedUser) throws UserNotFoundException {
+  public Map<String, Object> updateUser(AppUser updatedUser) throws UserNotFoundException {
     Map<String, Object> map = new HashMap<>();
 
     /** this is security checking */
@@ -116,15 +123,15 @@ public class UserService {
 //      return map;
 //    }
 
-    if (updatedUser.getEmail() != null) {
-      User checkUserFromDb = userRepository.findByEmail(updatedUser.getEmail());
+    if (updatedUser.getUsername() != null) {
+      AppUser checkUserFromDb = userRepository.findByUsername(updatedUser.getUsername());
       if (checkUserFromDb != null && updatedUser.getId() != checkUserFromDb.getId()) {
         map.put(status, UserStatus.EDIT_PROFILE_ERROR);
         return map;
       }
     }
 
-    User userFromDb = userRepository.findOne(updatedUser.getId());
+    AppUser userFromDb = userRepository.findOne(updatedUser.getId());
     if (userFromDb == null) {
       map.put(status, UserStatus.NOT_FOUND);
     } else {
@@ -198,14 +205,16 @@ public class UserService {
     return map;
   }
 
-  public Map<String, Object> login(String email, String password) {
+  public Map<String, Object> login(String username, String password) {
     Map<String, Object> map = new HashMap<>();
-    User user = userRepository.findByEmail(email);
-    if (user == null || !user.getPassword().equals(password)) {
+    AppUser userFromRepository = userRepository.findByUsername(username);
+    if (userFromRepository == null || !bCryptPasswordEncoder
+        .matches(password, userFromRepository.getPassword())) {
       map.put("status", UserStatus.LOGIN_BAD_LOGIN);
     } else {
       map.put("status", UserStatus.LOGIN_OK);
-      map.put("user", user);
+      map.put("user", userFromRepository);
+
     }
     return map;
   }
@@ -219,8 +228,8 @@ public class UserService {
     }
     String email = SecurityContextHolder.getContext().getAuthentication().getName();
     System.out.println(email);
-    User user = userRepository.findByEmail(changePassword.getEmail());
-    if (user.getEmail().equals(email)) {
+    AppUser user = userRepository.findByUsername(changePassword.getEmail());
+    if (user.getUsername().equals(email)) {
       user.setPassword(changePassword.getPassword());
       map.put("status", UserStatus.PASSWORD_CHANGE_OK);
       map.put("user", userRepository.save(user));
@@ -229,5 +238,4 @@ public class UserService {
     }
     return map;
   }
-
 }

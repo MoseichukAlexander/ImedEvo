@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,16 +40,19 @@ public class ClinicController {
   }
 
   @PostMapping("/createclinic")
+  @PreAuthorize("hasAnyRole('CLINIC_ADMIN', 'SUPER_ADMIN')")
   public Map<String, Object> createClinic(@RequestBody Clinic clinic) {
     return clinicService.save(clinic);
   }
 
   @PutMapping("/updateclinic")
+  @PreAuthorize("hasAnyRole('CLINIC_ADMIN', 'SUPER_ADMIN')")
   public Map<String, Object> updateClinic(@RequestBody Clinic clinic) {
     return clinicService.updateClinic(clinic);
   }
 
   @DeleteMapping("/deleteclinic/{id}")
+  @PreAuthorize("hasAnyRole('CLINIC_ADMIN', 'SUPER_ADMIN')")
   public void deleteClinic(@PathVariable Long id) {
     clinicService.delete(id)
         .orElseThrow(NoSuchClinicException::new);

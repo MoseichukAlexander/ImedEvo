@@ -2,7 +2,6 @@ package imedevo.model;
 
 import java.sql.Date;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,7 +15,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class AppUser {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +34,7 @@ public class User {
   private String phone;
 
   @Column(name = "email")
-  private String email;
+  private String username;
 
   @Column(name = "password")
   private String password;
@@ -65,17 +64,17 @@ public class User {
       inverseJoinColumns = @JoinColumn(name = "user_id"))
   private List<UserRole> userRoles;
 
-  public User() {
+  public AppUser() {
   }
 
-  public User(String firstName, String lastName, String phone, String email,
+  public AppUser(String firstName, String lastName, String phone, String username,
       String password, String city, String house, String street, String patronymic, String sex,
       Date birthDate, String dateOfRegistration) {
     this.lastName = lastName;
     this.firstName = firstName;
     this.patronymic = patronymic;
     this.phone = phone;
-    this.email = email;
+    this.username = username;
     this.password = password;
     this.city = city;
     this.house = house;
@@ -88,13 +87,13 @@ public class User {
 
   @Override
   public String toString() {
-    return "User{" +
+    return "{" +
         "id=" + id +
         ", lastName='" + lastName + '\'' +
         ", firstName='" + firstName + '\'' +
         ", patronymic='" + patronymic + '\'' +
         ", phone='" + phone + '\'' +
-        ", email='" + email + '\'' +
+        ", username='" + username + '\'' +
         ", city='" + city + '\'' +
         ", house='" + house + '\'' +
         ", street='" + street + '\'' +
@@ -137,12 +136,12 @@ public class User {
     this.phone = phone;
   }
 
-  public String getEmail() {
-    return email;
+  public String getUsername() {
+    return username;
   }
 
-  public void setEmail(String email) {
-    this.email = email;
+  public void setUsername(String username) {
+    this.username = username;
   }
 
   public String getPassword() {

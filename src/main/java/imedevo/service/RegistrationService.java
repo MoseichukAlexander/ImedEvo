@@ -1,23 +1,22 @@
 package imedevo.service;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
-import org.springframework.stereotype.Service;
-
+import imedevo.httpStatuses.UserStatus;
+import imedevo.model.AppUser;
+import imedevo.model.Role;
+import imedevo.model.UserRole;
+import imedevo.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import imedevo.httpStatuses.UserStatus;
-import imedevo.model.Role;
-import imedevo.model.User;
-import imedevo.model.UserRole;
-import imedevo.repository.UserRepository;
 import javax.transaction.Transactional;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class RegistrationService {
@@ -37,68 +36,71 @@ public class RegistrationService {
   private RolesService rolesService;
 
   @Autowired
+  public BCryptPasswordEncoder bCryptPasswordEncoder;
+
+  @Autowired
   private GeocodingService geocoding;
 
   @Transactional
-  public Map<String, Object> createNewUserInDB(User user) {
+  public Map<String, Object> createNewUserInDB(AppUser appUser) {
     Map<String, Object> map = new HashMap<>();
 
-    if (getUserByEmail(user) != null) {
+    if (getUserByEmail(appUser) != null) {
       map.put(status, UserStatus.REGISTRATION_ERROR_DUPLICATE_USERS);
       return map;
     }
 
-    if (user.getEmail() == null) {
+    if (appUser.getUsername() == null) {
       map.put(status, UserStatus.REGISTRATION_ERROR_EMPTY_EMAIL);
       return map;
     }
 
-    if (!isEmailValid(user.getEmail())) {
+    if (!isEmailValid(appUser.getUsername())) {
       map.put(status, UserStatus.REGISTRATION_ERROR_INCORRECT_EMAIL);
       return map;
     }
 
-    if (user.getPhone() == null) {
+    if (appUser.getPhone() == null) {
       map.put(status, UserStatus.REGISTRATION_ERROR_EMPTY_PHONE);
       return map;
     }
 
-    if (user.getPhone().length() != 13 || user.getPhone().charAt(0) != '+') {
+    if (appUser.getPhone().length() != 13 || appUser.getPhone().charAt(0) != '+') {
       map.put(status, UserStatus.REGISTRATION_ERROR_PHONE_INVALID);
       return map;
     }
 
-    if (user.getFirstName() == null || user.getLastName() == null
-        || user.getFirstName().length() < 2 || user.getLastName().length() < 2) {
+    if (appUser.getFirstName() == null || appUser.getLastName() == null
+        || appUser.getFirstName().length() < 2 || appUser.getLastName().length() < 2) {
       map.put(status, UserStatus.REGISTRATION_ERROR_EMPTY_FIRSTNAME_OR_LASTNAME);
       return map;
     }
 
-    if (user.getBirthDate() == null) {
+    if (appUser.getBirthDate() == null) {
       map.put(status, UserStatus.REGISTRATION_ERROR_EMPTY_BIRTHADAY);
       return map;
     }
 
-    if (user.getBirthDate().toLocalDate().isBefore(LocalDate.now().minusYears(100)) ||
-        user.getBirthDate().toLocalDate().isAfter(LocalDate.now())) {
+    if (appUser.getBirthDate().toLocalDate().isBefore(LocalDate.now().minusYears(100)) ||
+        appUser.getBirthDate().toLocalDate().isAfter(LocalDate.now())) {
       map.put(status, UserStatus.REGISTRATION_ERROR_BIRTHDAY_INVALID);
       return map;
     }
 
-    if (!isCorrectPassword(user)) {
+    if (!isCorrectPassword(appUser)) {
       map.put(status, UserStatus.REGISTRATION_ERROR_INCORRECT_PASSWORD);
       return map;
     }
 
     //TODO
-    if (user.getCity() != null) {
-      user.setCity(geocoding.getGeopositionByAddress(user.getCity()).getAddress());
+    if (appUser.getCity() != null) {
+      appUser.setCity(geocoding.getGeopositionByAddress(appUser.getCity()).getAddress());
     }
 
-    user.setDateOfRegistration(LocalDate.now().toString());
-    userRepository.save(user);
-    List<UserRole> userRoles = rolesService.getUserRoles(user.getId());
-    userRoles.add(new UserRole(user.getId(), Role.USER));
+    appUser.setDateOfRegistration(LocalDate.now().toString());
+    userRepository.save(appUser);
+    List<UserRole> userRoles = rolesService.getUserRoles(appUser.getId());
+    userRoles.add(new UserRole(appUser.getId(), Role.USER));
     rolesService.save(userRoles);
     try {
 //        mailSenderService.sendMail(user.getEmail(),
@@ -108,13 +110,15 @@ public class RegistrationService {
       logger.error("Error while sending email registration: " + mailException);
     }
 
+    appUser.setPassword(bCryptPasswordEncoder.encode(appUser.getPassword()));
+
     map.put(status, UserStatus.REGISTRATION_OK);
-    map.put("user", user);
+    map.put("user", appUser);
     return map;
   }
 
-  private User getUserByEmail(User user) {
-    return userRepository.findByEmail(user.getEmail());
+  private AppUser getUserByEmail(AppUser appUser) {
+    return userRepository.findByUsername(appUser.getUsername());
   }
 
   private boolean isEmailValid(String email) {
@@ -122,7 +126,8 @@ public class RegistrationService {
     return pattern.matcher(email).matches();
   }
 
-  private boolean isCorrectPassword(User user) {
-    return user.getPassword() != null && user.getPassword().length() >= lengthOfUserPassword;
+  private boolean isCorrectPassword(AppUser appUser) {
+    return appUser.getPassword() != null && appUser.getPassword().length() >= lengthOfUserPassword;
   }
+
 }

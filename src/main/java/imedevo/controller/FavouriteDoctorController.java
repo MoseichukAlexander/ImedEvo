@@ -1,6 +1,7 @@
 package imedevo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,11 +32,13 @@ public class FavouriteDoctorController {
   }
 
   @PostMapping("/addfavouritedoctor")
+  @PreAuthorize("hasAnyRole('USER', 'DOCTOR', 'CLINIC_ADMIN', 'SUPER_ADMIN', 'BLOGGER')")
   public Map<String, Object> addFavouriteDoctor(@RequestBody FavouriteDoctor favouriteDoctor) {
     return favouriteDoctorService.addFavouriteDoctor(favouriteDoctor);
   }
 
   @DeleteMapping("/deletefavouritedoctor")
+  @PreAuthorize("hasAnyRole('USER', 'DOCTOR', 'CLINIC_ADMIN', 'SUPER_ADMIN', 'BLOGGER')")
   public Map<String, Object> deleteFavouriteDoctor(@RequestParam(name = "id") long id) {
     return favouriteDoctorService.deleteFavouriteDoctor(id);
   }

@@ -1,10 +1,10 @@
 package imedevo.repository;
 
-import imedevo.model.User;
+import imedevo.model.AppUser;
 import org.springframework.data.repository.CrudRepository;
 
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends CrudRepository<AppUser, Long> {
 
-  User findByEmail(String email);
+  AppUser findByUsername(String username);
 
 }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,17 +41,20 @@ public class DoctorController {
   }
 
   @PostMapping("/createdoctor")
+  @PreAuthorize("hasAnyRole('CLINIC_ADMIN', 'SUPER_ADMIN')")
   public Map<String, Object> createDoctor(@RequestBody Doctor doctor) throws UserNotFoundException {
     return doctorService.save(doctor);
   }
 
   @PutMapping("/updatedoctor")
+  @PreAuthorize("hasAnyRole('DOCTOR', 'CLINIC_ADMIN', 'SUPER_ADMIN')")
   public Map<String, Object> updateDoctor(@RequestBody Doctor doctor)
       throws UserNotFoundException {
     return doctorService.updateDoctor(doctor);
   }
 
   @DeleteMapping("/deletedoctor/{id}")
+  @PreAuthorize("hasAnyRole('CLINIC_ADMIN', 'SUPER_ADMIN')")
   public void deleteDoctor(@PathVariable long id)
       throws UserNotFoundException, AccessDeniedException {
     doctorService.delete(id);
