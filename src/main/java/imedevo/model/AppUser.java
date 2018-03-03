@@ -14,7 +14,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 
 @Entity
 @Table(name = "users")
