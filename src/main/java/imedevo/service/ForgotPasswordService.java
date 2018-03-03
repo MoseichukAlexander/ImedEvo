@@ -1,8 +1,8 @@
 package imedevo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -10,8 +10,8 @@ import java.util.Map;
 
 import imedevo.httpStatuses.NoSuchUserException;
 import imedevo.httpStatuses.TokenStatus;
-import imedevo.model.TemporaryToken;
 import imedevo.model.AppUser;
+import imedevo.model.TemporaryToken;
 import imedevo.repository.TemporaryTokenRepository;
 import imedevo.repository.UserRepository;
 import javax.transaction.Transactional;
@@ -27,6 +27,9 @@ public class ForgotPasswordService {
 
   @Autowired
   private TemporaryTokenRepository tokenRepository;
+
+  @Autowired
+  private BCryptPasswordEncoder bCryptPasswordEncoder;
 
   public Map<String, Object> resetPassword(String username) throws NoSuchUserException {
     Map<String, Object> map = new HashMap<>();
@@ -57,7 +60,7 @@ public class ForgotPasswordService {
     if (tempToken != null) {
       AppUser user = userRepository.findByUsername(tempToken.getUserEmail());
       if (tempToken.getExpirationDate().isAfter(LocalDateTime.now())) {
-        user.setPassword(newPassword);
+        user.setPassword(bCryptPasswordEncoder.encode(newPassword));
         tokenRepository.delete(tempToken.getId());
         userRepository.save(user);
         map.put("status", TokenStatus.PASSWORD_CHANGED);
@@ -70,7 +73,4 @@ public class ForgotPasswordService {
     return map;
   }
 
-  private String convertFromStringToMD5(String newPassword) {
-    return DigestUtils.md5DigestAsHex(newPassword.getBytes());
-  }
 }
